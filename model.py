@@ -13,7 +13,7 @@ class MlpBlock(nn.Module):
         y = nn.Dense(self.mlp_dim)(x)  
         if self.use_bn:
             y = nn.BatchNorm(use_running_average=not train)(y)
-        y = nn.relu(y)
+        y = nn.gelu(y)
         y = nn.Dropout(rate=self.dropout_rate)(y, deterministic=not train)
         y = nn.Dense(x.shape[-1])(y)
 
@@ -73,4 +73,5 @@ class MlpMixer(nn.Module):
         else:
             x = nn.LayerNorm(name='pre_head_layer_norm')(x)
         x = jnp.mean(x, axis=1)
+
         return nn.Dense(self.num_classes, name='head', kernel_init=nn.initializers.zeros)(x)
